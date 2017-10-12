@@ -9,11 +9,6 @@ var Camera = {
     jpegQuality: 100,
     objectFit: 'cover'
   },
-  hooks: {
-    uploadComplete: null,
-    uploadProgress: null,
-    error: msg => alert('Camera Error: ' + msg)
-  },
   cameraWidth: 0,
   cameraHeight: 0,
   cameraIdentifiers: [],
@@ -23,9 +18,6 @@ var Camera = {
       this.cameraIdentifiers = devices
         .filter(d => d.kind === 'videoinput')
         .map(d => d.deviceId)
-      if (this.cameraIdentifiers.length) {
-        this.cameraIndex = this.cameraIdentifiers[this.cameraIdentifiers.length - 1]
-      }
     })
   },
   attach: function (element) {
@@ -58,8 +50,8 @@ var Camera = {
         }
         : {
           video: {
-            width: {min: 800, ideal: 1280, max: 1920},
-            height: {min: 600, ideal: 720, max: 1080},
+            width: {min: 640, ideal: 1280, max: 1920},
+            height: {min: 480, ideal: 720, max: 1080},
             deviceId: {
               exact: this.cameraIdentifiers[this.cameraIndex]
             },
@@ -103,15 +95,16 @@ var Camera = {
     })
   },
   switchCamera: function () {
-    if (this.cameraIdentifiers.length <= 1) {
-      return
-    }
     delete this.stream
     delete this.video
+
     this.container.innerHTML = ''
     this.live = false
     this.cameraIndex = (this.cameraIndex + 1) % this.cameraIdentifiers.length
-    return this.attach(this.container)
+    alert(this.cameraIndex)
+    const elementId = this.container.id
+    delete this.container
+    return this.attach(elementId)
   },
   upload: function (base64Data, url, progressCallback) {
     return new Promise((resolve, reject) => {
